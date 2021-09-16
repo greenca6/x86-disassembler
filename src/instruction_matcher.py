@@ -1,10 +1,7 @@
 from typing import List
 
 from .exceptions import InvalidInstructionException
-
-from .complex_opcode import ComplexOpcode
-from .mnemonic import Mnemonic
-from .instruction import Instruction
+from .models import ComplexOpcode, Mnemonic, Instruction
 
 
 class InstructionMatcher:
@@ -15,7 +12,7 @@ class InstructionMatcher:
     # 0xf7
     # 0xff
     def __init__(self):
-        self.instruction_set = [
+        self._instruction_set = [
             Instruction(Mnemonic.ADD, [0x05, ComplexOpcode(0x81, opcode_extension=0), 0x01, 0x03]), # opcode 0x81 is COMMON, need ComplexOpcode def here
             Instruction(Mnemonic.AND, [0x25, ComplexOpcode(0x81, opcode_extension=4), 0x21, 0x23]), # opcode 0x81 is COMMON, need ComplexOpcode def here
             Instruction(Mnemonic.CALL, [0xe8, ComplexOpcode(0xff, opcode_extension=2)]), # opcode 0xff is COMMON, need ComplexOpcode def here
@@ -55,7 +52,7 @@ class InstructionMatcher:
     def get_matching_instructions(self, byte) -> List[Instruction]:
         matching_instructions = []
 
-        for instruction in self.instruction_set:
+        for instruction in self._instruction_set:
             if (instruction.first_byte_matches_opcode(byte)):
                 matching_instructions.append(instruction)
 

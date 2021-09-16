@@ -24,17 +24,11 @@ class ComplexOpcode:
     def matches_first_byte(self, byte):
         return self.byte == byte
 
-    def matches_next_byte(self, first_byte, second_byte):
-        if not self.matches_first_byte(first_byte):
-            return False
-
+    def matches_next_byte(self, second_byte):
         if self.next_byte:
             return self.next_byte == second_byte
 
-        # Shift the opcode extension to be in the middle 3 bits (where the REG field resides)
-        shifted = self.opcode_extension << 3
-        # TODO: handle 0-case. If the opcode extension is 0 then the below will always return true
-        # do a shift left 2 of the byte and do a number comparison?
-
-        # AND operator will "pull" the middle 3 bits out of the byte - then we compare with the opcode
-        return shifted & second_byte == shifted
+        # Grab the reg value, return true if the one we have matches the one given
+        reg = (second_byte & 0x38) >> 3
+    
+        return reg == self.opcode_extension

@@ -28,7 +28,7 @@ class ComplexOpcode:
         if self.next_byte:
             return self.next_byte == second_byte
 
-        # Grab the reg value, return true if the one we have matches the one given
+        # Grab the reg bits, return true if the one we have matches the one given
         reg = (second_byte & 0x38) >> 3
     
         return reg == self.opcode_extension

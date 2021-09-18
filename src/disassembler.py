@@ -1,19 +1,17 @@
 from .models import Instruction
-from .parsers import InstructionParser
+from .decoders import InstructionDecoder
 
 from .instruction_matcher import InstructionMatcher
 
 class Disassembler:
-    def __init__(self) -> None:
-        self._matcher = InstructionMatcher()
-        self._parser = InstructionParser()
-
     def disassemble(self, bytes):
-        counter = 0
+        self._matcher = InstructionMatcher()
+        self._decoder = InstructionDecoder(bytes)
+        byte_index = 0
         instructions = {}
 
-        while counter < len(bytes):
-            current_byte = bytes[counter]
+        while byte_index < len(bytes):
+            current_byte = bytes[byte_index]
             matching_instructions = self._matcher.get_matching_instructions(current_byte)
 
             if len(matching_instructions) == 0:
@@ -24,10 +22,12 @@ class Disassembler:
 
             if len(matching_instructions) == 1:
                 matching_instruction = matching_instructions[0]
-            elif len(matching_instructions) > 1 and counter + 1 < len(bytes):
-                next_byte = bytes[counter + 1]
+            elif len(matching_instructions) > 1:
+                next_byte = bytes[byte_index + 1]
                 matching_instruction = self._matcher.get_matching_instruction(current_byte, next_byte)
 
-            parsed_instruction = self._parser.parse_instruction(bytes, current_byte, matching_instruction.mnemonic)
+            decoded_instruction = self._decoder.decode_instruction(byte_index, matching_instruction.mnemonic)
 
-            counter += 1
+            print(' '.join(decoded_instruction.instruction))
+
+            byte_index += decoded_instruction.total_bytes

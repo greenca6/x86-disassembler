@@ -33,7 +33,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
         if byte == 0xe8:
             imm = self.get_next_n_bytes(byte_index + 1, 4)
             instruction.append(imm)
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+4])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         elif byte == 0xff:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.CALL, opcode_extension=2)
 

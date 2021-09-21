@@ -105,7 +105,7 @@ class MiscInstructionDecoder(BaseDecoder):
         instruction = [Mnemonic.PUSH]
 
         if byte == 0xff:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.PUSH, Mnemonic.PUSH, opcode_extension=6)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.PUSH, opcode_extension=6)
         elif byte in range(0x50, 0x57 + 1):
             target_register = Register.from_int(byte - 0x50)
             instruction.append(target_register)

@@ -18,7 +18,6 @@ class Disassembler:
 
             # Instruction is unknown - keep going
             if len(matching_instructions) == 0:
-                print('db {}'.format(hex(current_byte)))
                 byte_index += 1
                 continue
             
@@ -35,6 +34,7 @@ class Disassembler:
             # TODO: how to handle the scenario where no matching instruction is found at this point?
 
             decoded_instruction = self._decoder.decode_instruction(byte_index, matching_instruction.mnemonic)
+            print(decoded_instruction.instruction)
 
             instructions.append(decoded_instruction)
 

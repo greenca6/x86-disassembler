@@ -1,0 +1,232 @@
+00000000  0544434241        add eax,0x41424344
+00000005  81C144332211      add ecx,0x11223344
+0000000B  810144332211      add dword [ecx],0x11223344
+00000011  81410444332211    add dword [ecx+0x4],0x11223344
+00000018  8181040000004433  add dword [ecx+0x4],0x11223344
+         -2211
+00000022  8105776655444433  add dword [dword 0x44556677],0x11223344
+         -2211
+0000002C  01F1              add ecx,esi
+0000002E  0131              add [ecx],esi
+00000030  017104            add [ecx+0x4],esi
+00000033  01B104000000      add [ecx+0x4],esi
+00000039  0331              add esi,[ecx]
+0000003B  037104            add esi,[ecx+0x4]
+0000003E  03B104000000      add esi,[ecx+0x4]
+00000044  033577665544      add esi,[dword 0x44556677]
+0000004A  2544434241        and eax,0x41424344
+0000004F  81E144332211      and ecx,0x11223344
+00000055  812144332211      and dword [ecx],0x11223344
+0000005B  81610444332211    and dword [ecx+0x4],0x11223344
+00000062  81A1040000004433  and dword [ecx+0x4],0x11223344
+         -2211
+0000006C  8125776655444433  and dword [dword 0x44556677],0x11223344
+         -2211
+00000076  21F1              and ecx,esi
+00000078  2131              and [ecx],esi
+0000007A  217104            and [ecx+0x4],esi
+0000007D  21B104000000      and [ecx+0x4],esi
+00000083  2331              and esi,[ecx]
+00000085  237104            and esi,[ecx+0x4]
+00000088  23B104000000      and esi,[ecx+0x4]
+0000008E  233577665544      and esi,[dword 0x44556677]
+00000094  E8B1FFFFFF        call 0x4a
+00000099  E813000000        call 0xb1
+0000009E  FFD0              call eax
+000000A0  FF10              call [eax]
+000000A2  FF5004            call [eax+0x4]
+000000A5  FF9004000000      call [eax+0x4]
+000000AB  FF1577665544      call [dword 0x44556677]
+000000B1  3D44434241        cmp eax,0x41424344
+000000B6  81F944332211      cmp ecx,0x11223344
+000000BC  813944332211      cmp dword [ecx],0x11223344
+000000C2  81790444332211    cmp dword [ecx+0x4],0x11223344
+000000C9  81B9040000004433  cmp dword [ecx+0x4],0x11223344
+         -2211
+000000D3  813D776655444433  cmp dword [dword 0x44556677],0x11223344
+         -2211
+000000DD  39F1              cmp ecx,esi
+000000DF  3931              cmp [ecx],esi
+000000E1  397104            cmp [ecx+0x4],esi
+000000E4  39B104000000      cmp [ecx+0x4],esi
+000000EA  3B31              cmp esi,[ecx]
+000000EC  3B7104            cmp esi,[ecx+0x4]
+000000EF  3BB104000000      cmp esi,[ecx+0x4]
+000000F5  3B3577665544      cmp esi,[dword 0x44556677]
+000000FB  FFCF              dec edi
+000000FD  49                dec ecx
+000000FE  FF09              dec dword [ecx]
+00000100  FF4904            dec dword [ecx+0x4]
+00000103  FF8904000000      dec dword [ecx+0x4]
+00000109  FF0D77665544      dec dword [dword 0x44556677]
+0000010F  F7F9              idiv ecx
+00000111  F739              idiv dword [ecx]
+00000113  F77904            idiv dword [ecx+0x4]
+00000116  F7B904000000      idiv dword [ecx+0x4]
+0000011C  F73D77665544      idiv dword [dword 0x44556677]
+00000122  F7E9              imul ecx
+00000124  F729              imul dword [ecx]
+00000126  F76904            imul dword [ecx+0x4]
+00000129  F7A904000000      imul dword [ecx+0x4]
+0000012F  0FAF31            imul esi,[ecx]
+00000132  0FAF7104          imul esi,[ecx+0x4]
+00000136  0FAFB104000000    imul esi,[ecx+0x4]
+0000013D  0FAF3577665544    imul esi,[dword 0x44556677]
+00000144  693144332211      imul esi,[ecx],dword 0x11223344
+0000014A  69710444332211    imul esi,[ecx+0x4],dword 0x11223344
+00000151  69B1040000004433  imul esi,[ecx+0x4],dword 0x11223344
+         -2211
+0000015B  6935776655444433  imul esi,[dword 0x44556677],dword 0x11223344
+         -2211
+00000165  FFC7              inc edi
+00000167  41                inc ecx
+00000168  FF01              inc dword [ecx]
+0000016A  FF4104            inc dword [ecx+0x4]
+0000016D  FF8104000000      inc dword [ecx+0x4]
+00000173  FF0577665544      inc dword [dword 0x44556677]
+00000179  E9CCFEFFFF        jmp 0x4a
+0000017E  E937000000        jmp 0x1ba
+00000183  EBE0              jmp short 0x165
+00000185  EB13              jmp short 0x19a
+00000187  FFE1              jmp ecx
+00000189  FF21              jmp [ecx]
+0000018B  FF6104            jmp [ecx+0x4]
+0000018E  FFA104000000      jmp [ecx+0x4]
+00000194  FF2577665544      jmp [dword 0x44556677]
+0000019A  0F84AAFEFFFF      jz near 0x4a
+000001A0  0F8414000000      jz near 0x1ba
+000001A6  74D1              jz 0x179
+000001A8  74F0              jz 0x19a
+000001AA  0F859AFEFFFF      jnz near 0x4a
+000001B0  0F8504000000      jnz near 0x1ba
+000001B6  75C1              jnz 0x179
+000001B8  75E0              jnz 0x19a
+000001BA  8D31              lea esi,[ecx]
+000001BC  8D7104            lea esi,[ecx+0x4]
+000001BF  8DB104000000      lea esi,[ecx+0x4]
+000001C5  8D3577665544      lea esi,[dword 0x44556677]
+000001CB  B944332211        mov ecx,0x11223344
+000001D0  C70144332211      mov dword [ecx],0x11223344
+000001D6  C7410444332211    mov dword [ecx+0x4],0x11223344
+000001DD  C781040000004433  mov dword [ecx+0x4],0x11223344
+         -2211
+000001E7  C705776655444433  mov dword [dword 0x44556677],0x11223344
+         -2211
+000001F1  89F1              mov ecx,esi
+000001F3  8931              mov [ecx],esi
+000001F5  897104            mov [ecx+0x4],esi
+000001F8  89B104000000      mov [ecx+0x4],esi
+000001FE  8B31              mov esi,[ecx]
+00000200  8B7104            mov esi,[ecx+0x4]
+00000203  8BB104000000      mov esi,[ecx+0x4]
+00000209  8B3577665544      mov esi,[dword 0x44556677]
+0000020F  A5                movsd
+00000210  F7D9              neg ecx
+00000212  F719              neg dword [ecx]
+00000214  F75904            neg dword [ecx+0x4]
+00000217  F79904000000      neg dword [ecx+0x4]
+0000021D  F71D77665544      neg dword [dword 0x44556677]
+00000223  90                nop
+00000224  F7D1              not ecx
+00000226  F711              not dword [ecx]
+00000228  F75104            not dword [ecx+0x4]
+0000022B  F79104000000      not dword [ecx+0x4]
+00000231  F71577665544      not dword [dword 0x44556677]
+00000237  F7E1              mul ecx
+00000239  F721              mul dword [ecx]
+0000023B  F76104            mul dword [ecx+0x4]
+0000023E  F7A104000000      mul dword [ecx+0x4]
+00000244  F72577665544      mul dword [dword 0x44556677]
+0000024A  0D44434241        or eax,0x41424344
+0000024F  81C944332211      or ecx,0x11223344
+00000255  810944332211      or dword [ecx],0x11223344
+0000025B  81490444332211    or dword [ecx+0x4],0x11223344
+00000262  8189040000004433  or dword [ecx+0x4],0x11223344
+         -2211
+0000026C  810D776655444433  or dword [dword 0x44556677],0x11223344
+         -2211
+00000276  09F1              or ecx,esi
+00000278  0931              or [ecx],esi
+0000027A  097104            or [ecx+0x4],esi
+0000027D  09B104000000      or [ecx+0x4],esi
+00000283  0B31              or esi,[ecx]
+00000285  0B7104            or esi,[ecx+0x4]
+00000288  0BB104000000      or esi,[ecx+0x4]
+0000028E  0B3577665544      or esi,[dword 0x44556677]
+00000294  8FC7              pop edi
+00000296  59                pop ecx
+00000297  8F01              pop dword [ecx]
+00000299  8F4104            pop dword [ecx+0x4]
+0000029C  8F8104000000      pop dword [ecx+0x4]
+000002A2  8F0577665544      pop dword [dword 0x44556677]
+000002A8  FFF7              push edi
+000002AA  51                push ecx
+000002AB  FF31              push dword [ecx]
+000002AD  FF7104            push dword [ecx+0x4]
+000002B0  FFB104000000      push dword [ecx+0x4]
+000002B6  FF3577665544      push dword [dword 0x44556677]
+000002BC  6877665544        push dword 0x44556677
+000002C1  F2A7              repne cmpsd
+000002C3  CB                retf
+000002C4  CA5544            retf 0x4455
+000002C7  C3                ret
+000002C8  C25544            ret 0x4455
+000002CB  D1E1              shl ecx,1
+000002CD  D121              shl dword [ecx],1
+000002CF  D16104            shl dword [ecx+0x4],1
+000002D2  D1A104000000      shl dword [ecx+0x4],1
+000002D8  D1F9              sar ecx,1
+000002DA  D139              sar dword [ecx],1
+000002DC  D17904            sar dword [ecx+0x4],1
+000002DF  D1B904000000      sar dword [ecx+0x4],1
+000002E5  D1E9              shr ecx,1
+000002E7  D129              shr dword [ecx],1
+000002E9  D16904            shr dword [ecx+0x4],1
+000002EC  D1A904000000      shr dword [ecx+0x4],1
+000002F2  81D944332211      sbb ecx,0x11223344
+000002F8  811944332211      sbb dword [ecx],0x11223344
+000002FE  81590444332211    sbb dword [ecx+0x4],0x11223344
+00000305  8199040000004433  sbb dword [ecx+0x4],0x11223344
+         -2211
+0000030F  811D776655444433  sbb dword [dword 0x44556677],0x11223344
+         -2211
+00000319  19F1              sbb ecx,esi
+0000031B  1931              sbb [ecx],esi
+0000031D  197104            sbb [ecx+0x4],esi
+00000320  19B104000000      sbb [ecx+0x4],esi
+00000326  1B31              sbb esi,[ecx]
+00000328  1B7104            sbb esi,[ecx+0x4]
+0000032B  1BB104000000      sbb esi,[ecx+0x4]
+00000331  1B3577665544      sbb esi,[dword 0x44556677]
+00000337  A944434241        test eax,0x41424344
+0000033C  F7C144332211      test ecx,0x11223344
+00000342  F70144332211      test dword [ecx],0x11223344
+00000348  F7410444332211    test dword [ecx+0x4],0x11223344
+0000034F  F781040000004433  test dword [ecx+0x4],0x11223344
+         -2211
+00000359  F705776655444433  test dword [dword 0x44556677],0x11223344
+         -2211
+00000363  85F1              test ecx,esi
+00000365  8531              test [ecx],esi
+00000367  857104            test [ecx+0x4],esi
+0000036A  85B104000000      test [ecx+0x4],esi
+00000370  8531              test [ecx],esi
+00000372  857104            test [ecx+0x4],esi
+00000375  85B104000000      test [ecx+0x4],esi
+0000037B  853577665544      test [dword 0x44556677],esi
+00000381  3544434241        xor eax,0x41424344
+00000386  81F144332211      xor ecx,0x11223344
+0000038C  813144332211      xor dword [ecx],0x11223344
+00000392  81710444332211    xor dword [ecx+0x4],0x11223344
+00000399  81B1040000004433  xor dword [ecx+0x4],0x11223344
+         -2211
+000003A3  8135776655444433  xor dword [dword 0x44556677],0x11223344
+         -2211
+000003AD  31F1              xor ecx,esi
+000003AF  3131              xor [ecx],esi
+000003B1  317104            xor [ecx+0x4],esi
+000003B4  31B104000000      xor [ecx+0x4],esi
+000003BA  3331              xor esi,[ecx]
+000003BC  337104            xor esi,[ecx+0x4]
+000003BF  33B104000000      xor esi,[ecx+0x4]
+000003C5  333577665544      xor esi,[dword 0x44556677]

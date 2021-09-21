@@ -22,7 +22,7 @@ class Mnemonic:
     OUTPUT_TO_PORT = 'out'
     POP = 'pop'
     PUSH = 'push'
-    REPNE_CMPSD = 'repne cmpsd' # TODO: what to do with this one...
+    REPNE_CMPSD = 'repne cmpsd'
     RETURN_FAR = 'retf'
     RETURN_NEAR = 'retn'
     SHIFT_ARITHMETIC_LEFT = 'sal'

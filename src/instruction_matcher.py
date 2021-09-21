@@ -47,7 +47,6 @@ class InstructionMatcher:
             Instruction(Mnemonic.TEST, [0xa9, ComplexOpcode(0xf7, opcode_extension=0), 0x85]), # opcode 0xf7 is COMMON, need ComplexOpcode here
             Instruction(Mnemonic.EXCLUSIVE_OR, [0x35, ComplexOpcode(0x81, opcode_extension=6), 0x31, 0x33]), # opcode 0x81 is COMMON, need ComplexOpcode here
         ]
-        pass
 
     def get_matching_instructions(self, byte) -> List[Instruction]:
         matching_instructions = []

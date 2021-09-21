@@ -1,3 +1,4 @@
+from src.models.instruction_signature import InstructionSignature
 from src.models.register import Register
 from ..models import Mnemonic, DecodedInstruction
 
@@ -34,121 +35,121 @@ class ArithmeticInstructionDecoder(BaseDecoder):
 
         # add eax, imm32
         if byte == 0x05:
-            instruction.append(Register.to_string(Register.EDX))
+            instruction.append(Register.to_string(Register.EAX))
             instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
-            return DecodedInstruction(instruction, 6)
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         # add r/m32, imm32
         elif byte == 0x81:
-            modrm_byte = self.bytes[byte_index + 1]
-            (mod, reg, rm) = self.get_modrm_bits(modrm_byte)
-            rm_register = Register.from_int(rm)
-
-            # The REG field is assumed to be 0 here - if this hits we're in trouble
-            if reg != 0:
-                raise Exception('Attempted to decode an add instruction with opcode 0x81, but recieved an invalid reg value: {}'.format(reg))
-
-            if mod == 0:
-                # [r/m], imm32
-                imm = self.get_next_n_bytes(byte_index + 2, 4)
-                instruction.append('[{}],'.format(rm_register))
-                instruction.append(imm)
-                return DecodedInstruction(instruction, 6)
-            elif mod == 1:
-                # [r/m + 1-byte offset], imm32
-                offset = self.get_next_n_bytes(byte_index + 2, 1)
-                imm = self.get_next_n_bytes(byte_index + 3, 4)
-                instruction.append('[{} + {}],'.format(rm_register, offset))
-                instruction.append(imm)
-                return DecodedInstruction(instruction, 7)
-            elif mod == 2:
-                # [r/m + 4-byte offset], imm32
-                offset = self.get_next_n_bytes(byte_index + 2, 4)
-                imm = self.get_next_n_bytes(byte_index + 6, 4)
-                instruction.append('[{} + {}],'.format(rm_register, offset))
-                instruction.append(imm)
-                return DecodedInstruction(instruction, 10)
-            elif mod == 3:
-                # Direct register access, no need to do anything
-                imm = self.get_next_n_bytes(byte_index + 2, 4)
-                instruction.append('{},'.format(rm_register))
-                instruction.append(imm)
-                return DecodedInstruction(instruction, 6)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.ADD, opcode_extension=0)
         # add r/m32, r32
         elif byte == 0x01:
-            modrm_byte = self.bytes[byte_index + 1]
-            (mod, reg, rm) = self.get_modrm_bits(modrm_byte)
-            reg_register = Register.from_int(reg)
-            rm_register = Register.from_int(rm)
-            
-            if mod == 0:
-                instruction.append('[{}],'.format(rm_register))
-                instruction.append(reg_register)
-                return DecodedInstruction(instruction, 2)
-            elif mod == 1:
-                # [r/m + 1-byte offset], reg
-                offset = self.get_next_n_bytes(byte_index + 2, 1)
-                instruction.append('[{} + {}],'.format(rm_register, offset))
-                instruction.append(reg_register)
-                return DecodedInstruction(instruction, 3)
-            elif mod == 2:
-                # [r/m + 4-byte offset], reg
-                offset = self.get_next_n_bytes(byte_index + 2, 4)
-                instruction.append('[{} + {}],'.format(rm_register, offset))
-                instruction.append(reg_register)
-                return DecodedInstruction(instruction, 6)
-            elif mod == 3:
-                # r/m, reg
-                instruction.append('{},'.format(rm_register))
-                instruction.append(reg_register)
-                return DecodedInstruction(instruction, 2)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.ADD)
         # add r32, r/m32
         elif byte == 0x03:
-            modrm_byte = self.bytes[byte_index + 1]
-            (mod, reg, rm) = self.get_modrm_bits(modrm_byte)
-            reg_register = Register.from_int(reg)
-            rm_register = Register.from_int(rm)
-            
-            if mod == 0:
-                instruction.append('{},'.format(reg_register))
-                instruction.append('[{}]'.format(rm_register))
-                return DecodedInstruction(instruction, 2)
-            elif mod == 1:
-                # [r/m + 1-byte offset], reg
-                offset = self.get_next_n_bytes(byte_index + 2, 1)
-                instruction.append('{},'.format(reg_register))
-                instruction.append('[{} + {}]'.format(rm_register, offset))
-                return DecodedInstruction(instruction, 3)
-            elif mod == 2:
-                # [r/m + 4-byte offset], reg
-                offset = self.get_next_n_bytes(byte_index + 2, 4)
-                instruction.append('{},'.format(reg_register))
-                instruction.append('[{} + {}]'.format(rm_register, offset))
-                return DecodedInstruction(instruction, 6)
-            elif mod == 3:
-                # r/m, reg
-                instruction.append('{},'.format(reg_register))
-                instruction.append('{}'.format(rm_register))
-                return DecodedInstruction(instruction, 2)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.ADD)
 
         raise Exception('Unable to decode add with given opcode: {}'.format(hex(byte)))
 
     def _decode_decrement(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+        instruction = [Mnemonic.DECREMENT]
+
+        if byte in range(0x48, 0x48 + 8):
+            target_register = Register.from_int(byte - 0x48)
+            instruction.append('{}'.format(target_register))
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+1])
+        elif byte == 0xff:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.DECREMENT, opcode_extension=1)
+        
+        raise Exception('Unable to decode dec with given opcode: {}'.format(hex(byte)))
 
     def _decode_signed_divide(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+
+        if byte == 0xf7:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SIGNED_DIVIDE, opcode_extension=7)
+
+        raise Exception('Unable to decode idiv with given opcode: {}'.format(hex(byte)))
 
     def _decode_signed_multiply(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+
+        if byte == 0xf7:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SIGNED_DIVIDE, opcode_extension=5)
+        elif byte == 0x0f:
+            next_byte = self.bytes[byte_index + 1]
+
+            if next_byte != 0xaf:
+                raise Exception('Unable to decode imul with given opcode: {}{}'.format(hex(byte), hex(next_byte)))
+
+            # This instruction has an extra byte in it's opcode so we have to modify the return results from the decode_instruction call
+            i = self.decode_instruction_by_signature(byte_index + 1, InstructionSignature.R32_RM32, Mnemonic.SIGNED_MULTIPLY)
+            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index+len(i.bytes) + 1])
+        elif byte == 0x69:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32_IMM, Mnemonic.SIGNED_MULTIPLY)
+
+        raise Exception('Unable to decode idiv with given opcode: {}'.format(hex(byte)))
+
 
     def _decode_increment(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+        instruction = [Mnemonic.INCREMENT]
+
+        if byte in range(0x40, 0x40 + 8):
+            target_register = Register.from_int(byte - 0x40)
+            instruction.append('{}'.format(target_register))
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+1])
+        elif byte == 0xff:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.DECREMENT, opcode_extension=0)
+
+        raise Exception('Unable to decode inc with given opcode: {}'.format(hex(byte)))
 
     def _decode_multiply(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+
+        if byte == 0xf7:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.MULTIPLY, opcode_extension=4)
+
+        raise Exception('Unable to decode mul with given opcode: {}'.format(hex(byte)))
 
     def _decode_subtract_with_borrow(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+        instruction = [Mnemonic.SUBTRACT_WITH_BORROW]
+
+        # sub eax, imm32
+        if byte == 0x1d:
+            instruction.append(Register.to_string(Register.EAX))
+            instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
+        # sub r/m32, imm32
+        elif byte == 0x81:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.SUBTRACT_WITH_BORROW, opcode_extension=3)
+        # sub r/m32, r32
+        elif byte == 0x29:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.SUBTRACT_WITH_BORROW)
+        # sub r32, r/m32
+        elif byte == 0x2b:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.SUBTRACT_WITH_BORROW)
+
+        raise Exception('Unable to decode sub with given opcode: {}'.format(hex(byte)))
 
     def _decode_subtract(self, byte_index: int) -> DecodedInstruction:
-        pass
+        byte = self.bytes[byte_index]
+        instruction = [Mnemonic.SUBTRACT]
+
+        # sub eax, imm32
+        if byte == 0x2d:
+            instruction.append(Register.to_string(Register.EAX))
+            instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
+        # sub r/m32, imm32
+        elif byte == 0x81:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.SUBTRACT_WITH_BORROW, opcode_extension=3)
+        # sub r/m32, r32
+        elif byte == 0x29:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.SUBTRACT_WITH_BORROW)
+        # sub r32, r/m32
+        elif byte == 0x2b:
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.SUBTRACT_WITH_BORROW)
+
+        raise Exception('Unable to decode sub with given opcode: {}'.format(hex(byte)))

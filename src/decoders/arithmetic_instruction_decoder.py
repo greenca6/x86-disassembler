@@ -57,7 +57,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
         if byte in range(0x48, 0x48 + 8):
             target_register = Register.from_int(byte - 0x48)
             instruction.append('{}'.format(target_register))
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+1])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 1])
         elif byte == 0xff:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.DECREMENT, opcode_extension=1)
         
@@ -75,7 +75,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
         byte = self.bytes[byte_index]
 
         if byte == 0xf7:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SIGNED_DIVIDE, opcode_extension=5)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SIGNED_MULTIPLY, opcode_extension=5)
         elif byte == 0x0f:
             next_byte = self.bytes[byte_index + 1]
 
@@ -100,7 +100,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
             instruction.append('{}'.format(target_register))
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+1])
         elif byte == 0xff:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.DECREMENT, opcode_extension=0)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.INCREMENT, opcode_extension=0)
 
         raise Exception('Unable to decode inc with given opcode: {}'.format(hex(byte)))
 
@@ -144,12 +144,12 @@ class ArithmeticInstructionDecoder(BaseDecoder):
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         # sub r/m32, imm32
         elif byte == 0x81:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.SUBTRACT_WITH_BORROW, opcode_extension=3)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.SUBTRACT, opcode_extension=3)
         # sub r/m32, r32
         elif byte == 0x29:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.SUBTRACT_WITH_BORROW)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.SUBTRACT)
         # sub r32, r/m32
         elif byte == 0x2b:
-            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.SUBTRACT_WITH_BORROW)
+            return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.SUBTRACT)
 
         raise Exception('Unable to decode sub with given opcode: {}'.format(hex(byte)))

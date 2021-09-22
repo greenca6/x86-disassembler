@@ -61,7 +61,7 @@ class LogicalInstructionDecoder(BaseDecoder):
         if byte == 0x3d:
             instruction.append(Register.from_int(Register.EAX))
             instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 6])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 5])
         # cmp r/m32, imm32
         elif byte == 0x81:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.COMPARE, opcode_extension=7)
@@ -117,9 +117,8 @@ class LogicalInstructionDecoder(BaseDecoder):
         if byte == 0xd1:
             # We need to read an extra byte at the end of the instruction after processing the r/m32 parameter
             i = self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SHIFT_ARITHMETIC_LEFT, opcode_extension=4)
-            next_byte = self.bytes[byte_index + len(i.bytes) + 1]
-            i.instruction.append(hex(next_byte))
-            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes) + 1])
+            i.instruction.append('1')
+            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes)])
 
         raise Exception('Unable to decode sal with given opcode: {}'.format(hex(byte)))
 
@@ -130,8 +129,8 @@ class LogicalInstructionDecoder(BaseDecoder):
             # We need to read an extra byte at the end of the instruction after processing the r/m32 parameter
             i = self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SHIFT_ARITHMETIC_RIGHT, opcode_extension=7)
             next_byte = self.bytes[byte_index + len(i.bytes) + 1]
-            i.instruction.append(hex(next_byte))
-            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes) + 1])
+            i.instruction.append('1')
+            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes)])
 
         raise Exception('Unable to decode sar with given opcode: {}'.format(hex(byte)))
 
@@ -142,8 +141,8 @@ class LogicalInstructionDecoder(BaseDecoder):
             # We need to read an extra byte at the end of the instruction after processing the r/m32 parameter
             i = self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SHIFT_LOGICAL_RIGHT, opcode_extension=5)
             next_byte = self.bytes[byte_index + len(i.bytes) + 1]
-            i.instruction.append(hex(next_byte))
-            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes) + 1])
+            i.instruction.append('1')
+            return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes)])
 
         raise Exception('Unable to decode shr with given opcode: {}'.format(hex(byte)))
 

@@ -45,16 +45,34 @@ class Disassembler:
 
     def _output_results(self, instructions: List[DecodedInstruction]):
         instruction_counter = 0
+        labels = {}
 
+        # First loop through the program to find/calculate any labels that may exist
         for i in instructions:
-            ic_location = '%08x' % instruction_counter
-            output = ic_location + ':  ' + str(i)
-            print(output)
+            offset_label = self._get_offset_label(instruction_counter, i)
+
+            # Add the calculated label to the dictionary if it exists, and modify the instruction containing the label
+            if offset_label:
+                labels = { **labels, **offset_label }
+                label = list(offset_label.values())[0]
+                i.instruction = [*i.instruction[:-1], label]
+
             instruction_counter += len(i.bytes)
 
-    def _get_offset_label(current_ic: int, instruction: DecodedInstruction) -> str:
-        # check for instruction type, return None if not matching
-        # break into two categories: rel8 and rel32
+        instruction_counter = 0
+        # Finally loop through the program and print out the full thing
+        for i in instructions:
+            ic_location = '%08x' % instruction_counter
+
+            label = labels.get(instruction_counter)
+
+            if label:
+                print('{}:'.format(label))
+
+            print(ic_location + ':  ' + str(i))
+            instruction_counter += len(i.bytes)
+
+    def _get_offset_label(self, current_ic: int, instruction: DecodedInstruction):
         if instruction.mnemonic not in [Mnemonic.JUMP, Mnemonic.JUMP_NOT_ZERO, Mnemonic.JUMP_ZERO, Mnemonic.CALL]:
             return None
         
@@ -64,16 +82,27 @@ class Disassembler:
         # jz, jnz, jmp rel8 instructions
         if opcode in [0x74, 0x75, 0xeb]:
             # First sign-extend the rel8 number
+            last_byte = instruction.bytes[-1]
+            sign_extended = 0xffffff00 | last_byte if last_byte >= 0x80 else last_byte
+            offset = current_ic + len(instruction.bytes) + sign_extended
+            
+            # Drop the 33rd bit if it exists
+            if offset > 0xffffffff:
+                offset = offset - 0x100000000
 
-            pass
-
+            return { offset: 'offset_{}'.format('%08x' % offset) }
         # rel32 instructions
-        if (opcode == 0x0f and extended_opcode in [0x84, 0x85]) or (opcode in [0xe8, 0xe9]):
-            last4_bytes = instruction.bytes[-4:]
+        elif (opcode == 0x0f and extended_opcode in [0x84, 0x85]) or (opcode in [0xe8, 0xe9]):
+            last4_bytes = list(instruction.bytes[-4:])
             last4_bytes.reverse()
             rel32 = int(''.join(map(lambda b: '%02X' % b, last4_bytes)), 16)
-            offset = current_ic + instruction.bytes + rel32
-            return 'offset_{}'.format('%08x' % offset)
+            offset = current_ic + len(instruction.bytes) + rel32
+
+            # Drop the 33rd bit if it exists
+            if offset > 0xffffffff:
+                offset = offset - 0x100000000
+
+            return { offset: 'offset_{}'.format('%08x' % offset) }
 
         # Non-deterministic jump/calls fall through and are decoded as-is
         return None

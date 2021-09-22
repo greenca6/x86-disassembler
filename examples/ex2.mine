@@ -1,4 +1,5 @@
-00000000:  E800000000              call 0x00000000
+00000000:  E800000000              call offset_00000005
+offset_00000005:
 00000005:  55                      push ebp
 00000006:  89E5                    mov ebp, esp
 00000008:  57                      push edi
@@ -7,7 +8,8 @@
 0000000b:  52                      push edx
 0000000c:  51                      push ecx
 0000000d:  50                      push eax
-0000000e:  E800000000              call 0x00000000
+0000000e:  E800000000              call offset_00000013
+offset_00000013:
 00000013:  5A                      pop edx
 00000014:  8D35CB000000            lea esi, [0x000000CB]
 0000001a:  01D6                    add esi, edx
@@ -26,14 +28,14 @@
 0000004e:  01D1                    add ecx, edx
 00000050:  81C1EDFFFFFF            add ecx, 0xFFFFFFED
 00000056:  51                      push ecx
-00000057:  E843000000              call 0x00000043
+00000057:  E843000000              call offset_0000009f
 0000005c:  B91C000000              mov ecx, 0x0000001C
 00000061:  51                      push ecx
 00000062:  8D0DD1000000            lea ecx, [0x000000D1]
 00000068:  01D1                    add ecx, edx
 0000006a:  81C1EDFFFFFF            add ecx, 0xFFFFFFED
 00000070:  51                      push ecx
-00000071:  E80C000000              call 0x0000000C
+00000071:  E80C000000              call offset_00000082
 00000076:  5A                      pop edx
 00000077:  5A                      pop edx
 00000078:  58                      pop eax
@@ -44,6 +46,7 @@
 0000007d:  5F                      pop edi
 0000007e:  5D                      pop ebp
 0000007f:  C20000                  retn 0x0000
+offset_00000082:
 00000082:  55                      push ebp
 00000083:  89E5                    mov ebp, esp
 00000085:  50                      push eax
@@ -60,6 +63,7 @@
 0000009c:  58                      pop eax
 0000009d:  5D                      pop ebp
 0000009e:  C3                      retn
+offset_0000009f:
 0000009f:  55                      push ebp
 000000a0:  89E5                    mov ebp, esp
 000000a2:  57                      push edi
@@ -71,6 +75,7 @@
 000000ac:  8B7D08                  mov edi, [ebp + 0x08]
 000000af:  31D2                    xor edx, edx
 000000b1:  8B06                    mov eax, [esi]
+offset_000000b3:
 000000b3:  BB41000000              mov ebx, 0x00000041
 000000b8:  31D8                    xor eax, ebx
 000000ba:  8907                    mov [edi], eax
@@ -78,7 +83,7 @@
 000000bd:  47                      inc edi
 000000be:  42                      inc edx
 000000bf:  39D1                    cmp ecx, edx
-000000c1:  75EE                    jnz 0xEE
+000000c1:  75EE                    jnz offset_000000b3
 000000c3:  5A                      pop edx
 000000c4:  5B                      pop ebx
 000000c5:  5E                      pop esi

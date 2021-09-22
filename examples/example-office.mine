@@ -1,0 +1,9 @@
+00000000:  55                      push ebp
+00000001:  57                      push edi
+00000002:  C3                      retn
+00000003:  8938                    mov [eax], edi
+offset_00000005:
+00000005:  55                      push ebp
+00000006:  57                      push edi
+00000007:  55                      push ebp
+00000008:  EBF9                    jmp offset_00000005

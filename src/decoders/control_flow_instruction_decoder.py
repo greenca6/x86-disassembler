@@ -59,8 +59,13 @@ class ControlFlowInstructionDecoder(BaseDecoder):
 
         if mod == 0:
             # [r/m]
-            instruction.append('[{}]'.format(rm_register))
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+3])
+            if rm == Register.EBP:
+                disp32 = self.get_next_n_bytes(byte_index + 2, 4)
+                instruction.append('[{}]'.format(disp32))
+                return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 7])
+            else:
+                instruction.append('[{}]'.format(rm_register))
+                return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 3])
         elif mod == 1:
             # [r/m + 1-byte offset]
             offset = self.get_next_n_bytes(byte_index + 2, 1)
@@ -80,7 +85,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
         if byte == 0xeb:
             rel = self.get_next_n_bytes(byte_index + 1, 1)
             instruction.append(rel)
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 1])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 2])
         elif byte == 0xe9:
             rel = self.get_next_n_bytes(byte_index + 1, 4)
             instruction.append(rel)
@@ -97,7 +102,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
         if byte == 0x74:
             rel = self.get_next_n_bytes(byte_index + 1, 1)
             instruction.append(rel)
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 1])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 2])
         elif byte == 0x0f:
             next_byte = self.bytes[byte_index + 1]
 
@@ -117,7 +122,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
         if byte == 0x75:
             rel = self.get_next_n_bytes(byte_index + 1, 1)
             instruction.append(rel)
-            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 1])
+            return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 2])
         elif byte == 0x0f:
             next_byte = self.bytes[byte_index + 1]
 

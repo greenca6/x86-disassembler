@@ -34,6 +34,11 @@ class BaseDecoder(ABC):
 
             if mod == 0:
                 # [r/m]
+                if rm == Register.EBP:
+                    disp32 = self.get_next_n_bytes(instruction_byte_index + 2, 4)
+                    instruction.append('[{}]'.format(disp32))
+                    return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index + 6])
+                
                 instruction.append('[{}]'.format(rm_register))
                 return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index+2])
             elif mod == 1:
@@ -59,6 +64,13 @@ class BaseDecoder(ABC):
 
             if mod == 0:
                 # [r/m], imm32
+                if rm == Register.EBP:
+                    disp32 = self.get_next_n_bytes(instruction_byte_index + 2, 4)
+                    imm = self.get_next_n_bytes(instruction_byte_index + 7, 4)
+                    instruction.append('[{}],'.format(disp32))
+                    instruction.append(imm)
+                    return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index + 10])
+                
                 imm = self.get_next_n_bytes(instruction_byte_index + 2, 4)
                 instruction.append('[{}],'.format(rm_register))
                 instruction.append(imm)
@@ -89,6 +101,12 @@ class BaseDecoder(ABC):
             
             if mod == 0:
                 # [r/m], r32
+                if rm == Register.EBP:
+                    disp32 = self.get_next_n_bytes(instruction_byte_index + 2, 4)
+                    instruction.append('[{}],'.format(disp32))
+                    instruction.append(reg_register)
+                    return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index + 6])
+
                 instruction.append('[{}],'.format(rm_register))
                 instruction.append(reg_register)
                 return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index+2])
@@ -115,6 +133,12 @@ class BaseDecoder(ABC):
             
             if mod == 0:
                 # r32, [r/m]
+                if rm == Register.EBP:
+                    disp32 = self.get_next_n_bytes(instruction_byte_index + 2, 4)
+                    instruction.append('{},'.format(reg_register))
+                    instruction.append('[{}]'.format(disp32))
+                    return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index + 6])
+                
                 instruction.append('{},'.format(reg_register))
                 instruction.append('[{}]'.format(rm_register))
                 return DecodedInstruction(instruction, self.bytes[instruction_byte_index:instruction_byte_index+2])
@@ -141,8 +165,14 @@ class BaseDecoder(ABC):
             total_instructions = 2
             
             if mod == 0:
-                instruction.append('{},'.format(reg_register))
-                instruction.append('[{}],'.format(rm_register))
+                if rm == Register.EBP:
+                    disp32 = self.get_next_n_bytes(instruction_byte_index + 2, 4)
+                    instruction.append('{},'.format(reg_register))
+                    instruction.append('[{}],'.format(disp32))
+                    total_instructions += 4
+                else:
+                    instruction.append('{},'.format(reg_register))
+                    instruction.append('[{}],'.format(rm_register))
             elif mod == 1:
                 # [r/m + 1-byte offset], reg
                 offset = self.get_next_n_bytes(instruction_byte_index + 2, 1)

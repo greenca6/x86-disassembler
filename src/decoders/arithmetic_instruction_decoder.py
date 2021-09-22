@@ -35,7 +35,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
 
         # add eax, imm32
         if byte == 0x05:
-            instruction.append(Register.to_string(Register.EAX))
+            instruction.append(Register.from_int(Register.EAX))
             instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         # add r/m32, imm32
@@ -118,20 +118,20 @@ class ArithmeticInstructionDecoder(BaseDecoder):
 
         # sub eax, imm32
         if byte == 0x1d:
-            instruction.append(Register.to_string(Register.EAX))
+            instruction.append(Register.from_int(Register.EAX))
             instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         # sub r/m32, imm32
         elif byte == 0x81:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_IMM32, Mnemonic.SUBTRACT_WITH_BORROW, opcode_extension=3)
         # sub r/m32, r32
-        elif byte == 0x29:
+        elif byte == 0x19:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32_R32, Mnemonic.SUBTRACT_WITH_BORROW)
         # sub r32, r/m32
-        elif byte == 0x2b:
+        elif byte == 0x1b:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.R32_RM32, Mnemonic.SUBTRACT_WITH_BORROW)
 
-        raise Exception('Unable to decode sub with given opcode: {}'.format(hex(byte)))
+        raise Exception('Unable to decode sbb with given opcode: {}'.format(hex(byte)))
 
     def _decode_subtract(self, byte_index: int) -> DecodedInstruction:
         byte = self.bytes[byte_index]
@@ -139,7 +139,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
 
         # sub eax, imm32
         if byte == 0x2d:
-            instruction.append(Register.to_string(Register.EAX))
+            instruction.append(Register.from_int(Register.EAX))
             instruction.append(self.get_next_n_bytes(byte_index + 1, 4))
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index+5])
         # sub r/m32, imm32

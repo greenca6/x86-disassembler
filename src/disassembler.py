@@ -1,3 +1,4 @@
+from src.models.mnemonic import Mnemonic
 from src.models.decoded_instruction import DecodedInstruction
 from typing import List
 from .models import Instruction
@@ -34,7 +35,6 @@ class Disassembler:
             # TODO: how to handle the scenario where no matching instruction is found at this point?
 
             decoded_instruction = self._decoder.decode_instruction(byte_index, matching_instruction.mnemonic)
-            print(decoded_instruction.instruction)
 
             instructions.append(decoded_instruction)
 
@@ -51,3 +51,29 @@ class Disassembler:
             output = ic_location + ':  ' + str(i)
             print(output)
             instruction_counter += len(i.bytes)
+
+    def _get_offset_label(current_ic: int, instruction: DecodedInstruction) -> str:
+        # check for instruction type, return None if not matching
+        # break into two categories: rel8 and rel32
+        if instruction.mnemonic not in [Mnemonic.JUMP, Mnemonic.JUMP_NOT_ZERO, Mnemonic.JUMP_ZERO, Mnemonic.CALL]:
+            return None
+        
+        opcode = instruction.bytes[0]
+        extended_opcode = instruction.bytes[1]
+
+        # jz, jnz, jmp rel8 instructions
+        if opcode in [0x74, 0x75, 0xeb]:
+            # First sign-extend the rel8 number
+
+            pass
+
+        # rel32 instructions
+        if (opcode == 0x0f and extended_opcode in [0x84, 0x85]) or (opcode in [0xe8, 0xe9]):
+            last4_bytes = instruction.bytes[-4:]
+            last4_bytes.reverse()
+            rel32 = int(''.join(map(lambda b: '%02X' % b, last4_bytes)), 16)
+            offset = current_ic + instruction.bytes + rel32
+            return 'offset_{}'.format('%08x' % offset)
+
+        # Non-deterministic jump/calls fall through and are decoded as-is
+        return None

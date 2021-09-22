@@ -5,13 +5,8 @@ from .models import ComplexOpcode, Mnemonic, Instruction
 
 
 class InstructionMatcher:
-    # how to handle opcode overlaps for the first byte? Non unique opcodes:
-    # 0x81
-    # 0x0f
-    # 0xd1
-    # 0xf7
-    # 0xff
     def __init__(self):
+        # Dictionary of opcodes and matching instructions
         self._instruction_set = [
             Instruction(Mnemonic.ADD, [0x05, ComplexOpcode(0x81, opcode_extension=0), 0x01, 0x03]),
             Instruction(Mnemonic.AND, [0x25, ComplexOpcode(0x81, opcode_extension=4), 0x21, 0x23]),

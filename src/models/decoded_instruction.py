@@ -1,5 +1,6 @@
 from typing import List
 
+from src.models.mnemonic import Mnemonic
 
 class DecodedInstruction:
     def __init__(self, instruction: List[str], bytes: List[int]) -> None:
@@ -7,8 +8,12 @@ class DecodedInstruction:
         self.bytes = bytes
 
     @property
+    def mnemonic(self) -> Mnemonic:
+        return self.instruction[0]
+
+    @property
     def machine_code(self):
-        return ''.join(map(lambda b: hex(b).replace('0x', ''), self.bytes))
+        return ''.join(map(lambda b: '%02X' % b, self.bytes))
 
     def __str__(self) -> str:
-        return self.machine_code.ljust(16) + ' '.join(self.instruction)
+        return self.machine_code.ljust(24) + ' '.join(self.instruction)

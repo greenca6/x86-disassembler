@@ -1,1 +1,2 @@
+from .bytes_out_of_bounds_exception import BytesOutOfBoundsException
 from .invalid_instruction_exception import InvalidInstructionException

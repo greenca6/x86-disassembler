@@ -42,8 +42,8 @@ class ControlFlowInstructionDecoder(BaseDecoder):
 
     def _decode_call_flush(self, byte_index) -> DecodedInstruction:
         byte = self.bytes[byte_index]
-        next_byte = self.bytes[byte_index + 1]
-        modrm_byte = self.bytes[byte_index + 2]
+        next_byte = self.get_raw_byte(byte_index + 1)
+        modrm_byte = self.get_raw_byte(byte_index + 2)
         (mod, reg, rm) = self.get_modrm_bits(modrm_byte)
         instruction = [Mnemonic.CALL_FLUSH]
         rm_register = Register.from_int(rm)
@@ -104,7 +104,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
             instruction.append(rel)
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 2])
         elif byte == 0x0f:
-            next_byte = self.bytes[byte_index + 1]
+            next_byte = self.get_raw_byte(byte_index + 1)
 
             if next_byte != 0x84:
                 raise Exception('Attempted to decode a jz instruction, but recieved an invalid opcode: {}{}'.format(hex(byte), hex(next_byte)))
@@ -124,7 +124,7 @@ class ControlFlowInstructionDecoder(BaseDecoder):
             instruction.append(rel)
             return DecodedInstruction(instruction, self.bytes[byte_index:byte_index + 2])
         elif byte == 0x0f:
-            next_byte = self.bytes[byte_index + 1]
+            next_byte = self.get_raw_byte(byte_index + 1)
 
             if next_byte != 0x85:
                 raise Exception('Attempted to decode a jnz instruction, but recieved an invalid opcode: {}{}'.format(hex(byte), hex(next_byte)))

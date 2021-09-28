@@ -1,6 +1,6 @@
 import sys
 
-from src import Disassembler, disassembler
+from src import Disassembler
 
 
 def getfile(filename):	
@@ -9,11 +9,11 @@ def getfile(filename):
     return a	
 
 def main():
-    if len(sys.argv) < 2:
-        print ("Please enter filename.")
+    if len(sys.argv) < 3:
+        print ("Invalid command format. Valid format: `python main.py -i <input_file>`.")
         sys.exit(0)
     else:
-        binary = getfile(sys.argv[1])
+        binary = getfile(sys.argv[2])
 
     disassembler = Disassembler()
     disassembler.disassemble(binary)

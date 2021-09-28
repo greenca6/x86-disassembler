@@ -128,7 +128,6 @@ class LogicalInstructionDecoder(BaseDecoder):
         if byte == 0xd1:
             # We need to read an extra byte at the end of the instruction after processing the r/m32 parameter
             i = self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SHIFT_ARITHMETIC_RIGHT, opcode_extension=7)
-            next_byte = self.bytes[byte_index + len(i.bytes) + 1]
             i.instruction.append('1')
             return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes)])
 
@@ -140,7 +139,6 @@ class LogicalInstructionDecoder(BaseDecoder):
         if byte == 0xd1:
             # We need to read an extra byte at the end of the instruction after processing the r/m32 parameter
             i = self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SHIFT_LOGICAL_RIGHT, opcode_extension=5)
-            next_byte = self.bytes[byte_index + len(i.bytes) + 1]
             i.instruction.append('1')
             return DecodedInstruction(i.instruction, self.bytes[byte_index:byte_index + len(i.bytes)])
 

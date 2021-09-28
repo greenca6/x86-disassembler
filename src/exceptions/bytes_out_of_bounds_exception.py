@@ -1,0 +1,2 @@
+class BytesOutOfBoundsException(Exception):
+    pass

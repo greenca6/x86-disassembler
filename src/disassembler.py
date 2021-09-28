@@ -1,9 +1,8 @@
-from src.models.mnemonic import Mnemonic
-from src.models.decoded_instruction import DecodedInstruction
 from typing import List
-from .models import Instruction
-from .decoders import InstructionDecoder
 
+from .exceptions import BytesOutOfBoundsException, InvalidInstructionException
+from .models import Mnemonic, DecodedInstruction, Instruction
+from .decoders import InstructionDecoder
 from .instruction_matcher import InstructionMatcher
 
 class Disassembler:
@@ -19,6 +18,7 @@ class Disassembler:
 
             # Instruction is unknown - keep going
             if len(matching_instructions) == 0:
+                instructions.append(DecodedInstruction([Mnemonic.DB, '0x%02x' % current_byte], bytes[byte_index:byte_index+1]))
                 byte_index += 1
                 continue
             
@@ -29,12 +29,26 @@ class Disassembler:
             if len(matching_instructions) == 1:
                 matching_instruction = matching_instructions[0]
             elif len(matching_instructions) > 1:
+                # Edge case where we are expecting more bits but don't have any to read
+                if byte_index + 1 >= len(bytes):
+                    instructions.append(DecodedInstruction([Mnemonic.DB, '0x%02x' % current_byte], bytes[byte_index:byte_index+1]))
+                    byte_index += 1
+                    continue
+
                 next_byte = bytes[byte_index + 1]
                 matching_instruction = self._matcher.get_matching_instruction(current_byte, next_byte)
 
-            # TODO: how to handle the scenario where no matching instruction is found at this point?
+            if matching_instruction == None:
+                instructions.append(DecodedInstruction([Mnemonic.DB, '0x%02x' % current_byte], bytes[byte_index:byte_index+1]))
+                byte_index += 1
+                continue
 
-            decoded_instruction = self._decoder.decode_instruction(byte_index, matching_instruction.mnemonic)
+            try:
+                decoded_instruction = self._decoder.decode_instruction(byte_index, matching_instruction.mnemonic)
+            except (BytesOutOfBoundsException, InvalidInstructionException):
+                instructions.append(DecodedInstruction([Mnemonic.DB, '0x%02x' % current_byte], bytes[byte_index:byte_index+1]))
+                byte_index += 1
+                continue
 
             instructions.append(decoded_instruction)
 

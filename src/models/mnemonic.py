@@ -5,6 +5,7 @@ class Mnemonic:
     CALL_FLUSH = 'clflush'
     COMPARE = 'cmp'
     DECREMENT = 'dec'
+    DB = 'db'
     SIGNED_DIVIDE = 'idiv'
     SIGNED_MULTIPLY = 'imul'
     INCREMENT = 'inc'

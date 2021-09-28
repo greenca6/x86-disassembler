@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+from src.exceptions.invalid_instruction_exception import InvalidInstructionException
 from typing import List
 
 from ..models import Mnemonic, DecodedInstruction, InstructionSignature, Register
+from ..exceptions import BytesOutOfBoundsException
 
 class BaseDecoder(ABC):
     def __init__(self, bytes: List[int]) -> None:
@@ -20,9 +22,8 @@ class BaseDecoder(ABC):
         mnemonic: the name of the instruction to decode
         opcode_extension: the optional opcode extension field, used for the r/m32, imm32 instruction signature only
         """
-        # TODO: address the mod == 0 && r/m = 101 case
         instruction = [mnemonic]
-        modrm_byte = self.bytes[instruction_byte_index + 1]
+        modrm_byte = self.get_raw_byte(instruction_byte_index + 1)
         (mod, reg, rm) = self.get_modrm_bits(modrm_byte)
 
         if signature == InstructionSignature.RM32:
@@ -30,7 +31,7 @@ class BaseDecoder(ABC):
 
             # The REG field is assumed to be the opcode extension here - if this hits we're in trouble
             if reg != opcode_extension:
-                raise Exception('Attempted to decode a {} instruction, but recieved an invalid reg value: {}'.format(mnemonic, reg))
+                raise InvalidInstructionException('Attempted to decode a {} instruction, but recieved an invalid reg value: {}'.format(mnemonic, reg))
 
             if mod == 0:
                 # [r/m]
@@ -60,7 +61,7 @@ class BaseDecoder(ABC):
 
             # The REG field is assumed to be the opcode extension here - if this hits we're in trouble
             if reg != opcode_extension:
-                raise Exception('Attempted to decode a(n) {} instruction, but recieved an invalid reg value: {}'.format(mnemonic, reg))
+                raise InvalidInstructionException('Attempted to decode a(n) {} instruction, but recieved an invalid reg value: {}'.format(mnemonic, reg))
 
             if mod == 0:
                 # [r/m], imm32
@@ -188,7 +189,7 @@ class BaseDecoder(ABC):
             elif mod == 3:
                 # r/m, reg
                 instruction.append('{},'.format(reg_register))
-                instruction.append('{}'.format(rm_register))
+                instruction.append('{},'.format(rm_register))
 
             imm = self.get_next_n_bytes(instruction_byte_index + total_instructions, 4)
             instruction.append(imm)
@@ -217,6 +218,9 @@ class BaseDecoder(ABC):
         """
         bytes = []
         for i in range (n):
+            if byte_index + i >= len(self.bytes):
+                raise BytesOutOfBoundsException()
+
             bytes.append(self.bytes[byte_index + i])
 
         bytes.reverse()
@@ -224,3 +228,13 @@ class BaseDecoder(ABC):
         bytes = ''.join(bytes)
 
         return '0x{}'.format(bytes)
+
+    def get_raw_byte(self, byte_index: int) -> int:
+        """
+        Gets the raw byte at the specified index.
+        """
+
+        if byte_index >= len(self.bytes):
+            raise BytesOutOfBoundsException()
+        
+        return self.bytes[byte_index]

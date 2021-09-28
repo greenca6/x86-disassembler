@@ -77,7 +77,7 @@ class ArithmeticInstructionDecoder(BaseDecoder):
         if byte == 0xf7:
             return self.decode_instruction_by_signature(byte_index, InstructionSignature.RM32, Mnemonic.SIGNED_MULTIPLY, opcode_extension=5)
         elif byte == 0x0f:
-            next_byte = self.bytes[byte_index + 1]
+            next_byte = self.get_raw_byte(byte_index + 1)
 
             if next_byte != 0xaf:
                 raise Exception('Unable to decode imul with given opcode: {}{}'.format(hex(byte), hex(next_byte)))

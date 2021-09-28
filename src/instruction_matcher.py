@@ -62,4 +62,4 @@ class InstructionMatcher:
             if instruction.bytes_match_opcode(first_byte, second_byte):
                 return instruction
 
-        raise InvalidInstructionException('Encountered invalid instruction with no matching opcodes: {} {}'.format(hex(first_byte), hex(second_byte)))
+        return None

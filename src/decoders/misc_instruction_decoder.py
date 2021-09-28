@@ -1,6 +1,7 @@
-from ..models import Mnemonic, DecodedInstruction, InstructionSignature, Register
-
 from .base_decoder import BaseDecoder
+
+from ..exceptions import InvalidInstructionException
+from ..models import Mnemonic, DecodedInstruction, InstructionSignature, Register
 
 
 class MiscInstructionDecoder(BaseDecoder):
@@ -120,10 +121,10 @@ class MiscInstructionDecoder(BaseDecoder):
 
     def _decode_repne_cmpsd(self, byte_index) -> DecodedInstruction:
         byte = self.bytes[byte_index]
-        opcode_extension = self.bytes[byte_index + 1]
+        opcode_extension = self.get_raw_byte(byte_index + 1)
 
         if byte == 0xf2 and opcode_extension == 0xa7:
             return DecodedInstruction([Mnemonic.REPNE_CMPSD], self.bytes[byte_index:byte_index + 2])
 
-        raise Exception('Unable to decode repne cmpsd with given opcode: {}{}'.format(hex(byte), hex(opcode_extension)))
+        raise InvalidInstructionException('Unable to decode repne cmpsd with given opcode: {}{}'.format(hex(byte), hex(opcode_extension)))
 

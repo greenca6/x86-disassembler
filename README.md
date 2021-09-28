@@ -19,7 +19,7 @@ Where `input_file` is any valid assembled binary file.
 Example:
 
 ```bash
-$ 
+$ python main.py -i examples/example1.o
 ```
 
 > Note: a collection of example binary files (in addition to their pre-assembled files) are inside of this repo's `examples/` directory.

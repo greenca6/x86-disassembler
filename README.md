@@ -1,6 +1,6 @@
 # x86 Disassembler
 
-This project is an x86 instruction disassembler. It recognizes only a subset of x86 instructions, those of which are specified in this projects [assignment document](docs/ProgrammingAssignment1.pdf).
+This project is an x86 instruction disassembler. It recognizes only a subset of x86 instructions.
 
 This was written as part of the Reverse Engineering and Vulnerability Analysis course at John's Hopkins University .
 
